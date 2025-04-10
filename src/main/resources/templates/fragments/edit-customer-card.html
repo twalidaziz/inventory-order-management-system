@@ -1,0 +1,38 @@
+<div th:fragment="editCustomerForm" class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <form th:object="${customer}"
+          th:action="@{/customers/update/{id}(id=${customer.id})}"
+          th:attr="hx-post=@{/customers/update/{id}(id=${customer.id})}"
+          hx-target="#customer-list"
+          hx-swap="outerHTML"
+          method="post">
+        <h2 class="text-xl text-gray-900 dark:text-white font-medium mb-4">Edit customer</h2>
+        <div class="grid grid-cols-4 gap-4">
+            <div class="col-span-2">
+                <label for="name-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                <input type="text" th:field="*{name}" id="name-input" class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div class="col-span-2">
+                <label for="address-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
+                <input type="text" th:field="*{address}" id="address-input" class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="email-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                <input type="text" th:field="*{email}" id="email-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="phone-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone no.</label>
+                <input type="text" th:field="*{phone}" id="phone-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <button type="button" class="w-full text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                    Delete
+                </button>
+            </div>
+            <div>
+                <button type="submit" class="w-full text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                    Save
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

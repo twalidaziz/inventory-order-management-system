@@ -1,0 +1,81 @@
+<div id="edit-order" th:fragment="orderItems" class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <form th:object="${order}"
+          th:action="@{/orders/update/{id}(id=${order.id})}"
+          th:attr="hx-post=@{/orders/update/{id}(id=${order.id})}"
+          hx-target="#order-list"
+          hx-swap="outerHTML"
+          method="post">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="col-span-2">
+                <h2 class="text-xl text-gray-900 dark:text-white font-medium">
+                    Edit order items <span th:text="${order.orderNumber}" class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400"></span>
+                </h2>
+            </div>
+            <div class="col-span-2">
+                <div class="flex items-center text-xs">
+                    <div th:text="'CREATED ON: ' + ${#temporals.format(order.dateCreated, 'dd-MM-yyyy HH:mm')} + ' | '"></div>
+                    <div th:text="'UPDATED ON: ' + ${#temporals.format(order.lastUpdated, 'dd-MM-yyyy HH:mm')} + ' | '"></div>
+                    <div th:text="'TOTAL COST: ' + ${order.totalCost}"></div>
+                </div>
+            </div>
+            <div class="col-span-4 text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                <ul class="flex flex-wrap -mb-px">
+                    <li class="me-2">
+                        <a th:attr="hx-get=@{/orders/edit/{id}(id=${order.id})}"
+                           hx-target="#edit-order"
+                           hx-trigger="click"
+                           style="cursor : pointer"
+                           class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
+                            Details
+                        </a>
+                    </li>
+                    <li class="me-2">
+                        <a th:attr="hx-get=@{/orders/items/{id}(id=${order.id})}"
+                           hx-target="#edit-order"
+                           hx-trigger="click"
+                           style="cursor : pointer"
+                           class="inline-block p-4 text-green-500 border-b-2 border-green-500 rounded-t-lg active dark:text-green-400 dark:border-green-400" aria-current="page">
+                            Items
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-span-2">
+                <label for="description-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                <input type="text" th:field="*{description}" id="description-input" class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="customer-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Customer</label>
+                <input type="text" th:field="*{customerName}" id="customer-select" class="block w-full p-2 cursor-not-allowed text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" disabled readonly>
+            </div>
+            <div>
+                <label for="contact-person-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contact person</label>
+                <input type="text" th:field="*{contactPerson}" id="contact-person-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="salesperson-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Salesperson</label>
+                <input type="text" th:field="*{salesperson}" id="salesperson-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="status-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+                <select th:field="*{status}" id="status-select" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status}"
+                            th:selected="${status == order.status}">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <button type="button" class="w-full text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                    Delete
+                </button>
+            </div>
+            <div>
+                <button type="submit" class="w-full text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                    Save
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,328 @@
+<div th:fragment="mainContent" id="mainContent" class="grid grid-cols-2 gap-4">
+    <!-- Back to inventory link -->
+    <div class="col-span-2">
+        <a th:attr="hx-get=@{/items/list}"
+           hx-target="#main-content"
+           hx-swap="outerHTML"
+           hx-trigger="click"
+           style="cursor:pointer"
+           class="inline-flex items-center font-normal text-sm text-green-500 dark:text-gray-500 hover:underline">
+            <svg class="w-[20px] h-[20px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+            </svg>
+            Back to inventory
+        </a>
+    </div>
+    <!-- Edit form -->
+    <div th:fragment="editForm" id="edit-form" class="col-span-1 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <h2 class="text-xl text-gray-900 dark:text-white font-medium mb-4">
+            Edit item <span th:text="${itemSKU}" class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400"></span>
+        </h2>
+        <form th:object="${item}"
+              th:action="@{/items/update/{id}(id=${item.id})}"
+              th:attr="hx-post=@{/items/update/{id}(id=${item.id})}"
+              hx-target="#edit-form"
+              hx-swap="outerHTML"
+              method="post"
+              enctype="multipart/form-data">
+            <div class="grid grid-cols-3 gap-4">
+                <!-- Upload item image -->
+                <div class="col-span-3">
+                    <div th:if="${itemImage == null}" class="flex items-center justify-center w-56">
+                        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-56 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">PNG or JPG (MAX. 224x224px)</p>
+                            </div>
+                            <input id="dropzone-file" type="file" name="image" accept="image/jpeg, image/png" class="hidden" />
+                        </label>
+                    </div>
+                    <!-- Item image -->
+                    <div th:if="${itemImage != null}" class="h-56 w-56">
+                        <label for="image-upload" class="cursor-pointer">
+                            <img class="max-w-lg rounded-lg w-54 h-54 border border-green-500 dark:border-gray-700" th:src="'data:image/jpeg;base64,' + ${itemImage}" alt="item image">
+                            <input type="file" name="image" id="image-upload" accept="image/jpeg, image/png" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+                <!-- Item name -->
+                <div class="col-span-3">
+                    <label for="name-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                    <input type="text"
+                           id="name-input"
+                           th:field="*{name}"
+                           class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="mt-2 text-xs text-red-600 dark:text-red-500"></p>
+                </div>
+                <!-- Item density -->
+                <div class="col-span-1">
+                    <label for="density-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Wood density</label>
+                    <select th:field="*{density}" id="density-select" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option th:each="d: ${densities}"
+                                th:value="${d.id}"
+                                th:text="${d.code}"
+                                th:selected="${d.id == item.density}">
+                        </option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('density')}" th:errors="*{density}" class="mt-2 text-xs text-red-600 dark:text-red-500"></p>
+                </div>
+                <!-- Item size -->
+                <div class="col-span-1">
+                    <label for="size-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Size (ft&sup2)</label>
+                    <input type="number" th:field="*{size}" id="size-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <p th:if="${#fields.hasErrors('size')}" th:errors="*{size}" class="mt-2 text-xs text-red-600 dark:text-red-500"></p>
+                </div>
+                <!-- Item price -->
+                <div class="col-span-1">
+                    <label for="cost-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                    <div id="price-container" class="relative">
+                        <input type="text" th:field="*{unitPrice}" id="cost-input" readonly class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <!-- Calculate price button -->
+                        <a th:attr="hx-post=@{/items/calculate-price}"
+                           hx-include="#density, #size"
+                           hx-target="#price-container"
+                           hx-swap="innerHTML"
+                           hx-trigger="click"
+                           style="bottom:5px; cursor:pointer"
+                           class="text-white absolute end-1.5 bg-green-500 hover:bg-green-400 rounded-lg text-xs px-1.5 py-1 dark:bg-green-500 dark:hover:bg-green-400">
+                            Calculate
+                        </a>
+                    </div>
+                </div>
+                <!-- Item quantity -->
+                <div class="col-span-1">
+                    <label for="quantity-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stock</label>
+                    <input type="number" th:field="*{quantity}" id="quantity-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <p th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="mt-2 text-xs text-red-600 dark:text-red-500"></p>
+                </div>
+                <!-- Save & Delete button -->
+                <div class="col-span-3">
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Delete button -->
+                        <div class="col-span-1">
+                            <button type="button" data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="w-full text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                                Delete
+                            </button>
+                        </div>
+                        <!-- Save button -->
+                        <div class="col-span-1">
+                            <button type="submit" class="w-full text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Delete modal -->
+                <div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    <div class="relative p-4 w-full max-w-md max-h-full">
+                        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                            <div class="p-4 md:p-5 text-center">
+                                <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                </svg>
+                                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Deleting this item will also delete associate order items. Are you sure you want to delete this item?</h3>
+                                <button data-modal-hide="popup-modal" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                                    Yes, I'm sure
+                                </button>
+                                <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <!-- Success message -->
+        <div th:if="${successMessage}" id="toast-success" class="flex items-center w-full max-w-xs fixed bottom-1 right-1 p-4 mb-4 text-gray-500 bg-white border border-green-300 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 dark:border-green-800" role="alert">
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                </svg>
+                <span class="sr-only">Check icon</span>
+            </div>
+            <div th:text="${successMessage}" class="ms-3 text-sm font-normal"></div>
+            <button type="button" onclick="document.getElementById('toast-success').style.display='none'" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-success" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
+        </div>
+        <!-- Error message -->
+        <div th:if="${errorMessage}" id="toast-danger" class="flex items-center w-full max-w-xs  fixed bottom-1 right-1 p-4 mb-4 text-gray-500 bg-white border border-red-300 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 dark:border-red-800" role="alert">
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+                </svg>
+                <span class="sr-only">Error icon</span>
+            </div>
+            <div th:text="${errorMessage}" class="ms-3 text-sm font-normal"></div>
+            <button type="button" onclick="document.getElementById('toast-danger').style.display='none'" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-danger" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <!-- Wood pricing -->
+    <div th:fragment="woodPricing" id="wood-pricing" class="col-span-1 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <h2 class="text-xl text-gray-900 dark:text-white font-medium mb-4">Wood Pricing</h2>
+        <!-- Search field -->
+        <div class="flex">
+            <div class="w-3/5">
+                <form th:attr="hx-get=@{/items/search-wood-pricing}"
+                      hx-target="#wood-price-list"
+                      hx-trigger="submit"
+                      hx-swap="outerHTML"
+                      class="flex max-w-lg mb-4 justify-start">
+                    <div class="relative w-full">
+                        <input type="text" name="keyword" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search by code or description" required />
+                    </div>
+                    <button type="submit" class="inline-flex items-center py-2 px-3 ms-2 text-xs text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg">
+                        Search
+                    </button>
+                </form>
+            </div>
+            <!-- Refresh button -->
+            <div class="w-2/5">
+                <div class="flex w-full mb-4 justify-end">
+                    <a th:attr="hx-get=@{/items/refresh}"
+                       hx-target="#wood-pricing"
+                       hx-swap="outerHTML"
+                       hx-trigger="click"
+                       style="cursor : pointer"
+                       class="inline-flex items-center py-2 px-3 ms-2 text-xs text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wood pricing table -->
+        <div th:fragment="woodPriceList" id="wood-price-list" class="relative overflow-x-auto shadow-md sm:rounded-lg border dark:border-gray-700">
+            <table class="w-full text-xs text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-white uppercase bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 dark:text-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        <div class="flex items-center">
+                            Code
+                            <a th:attr="hx-get=@{/items/refresh(page=${currentPage}, size=${size}, sortBy='code', direction=${sortBy == 'code' and direction == 'ASC' ? 'DESC' : 'ASC'})}"
+                               hx-target="#wood-pricing"
+                               hx-swap="outerHTML"
+                               hx-trigger="click"
+                               style="cursor: pointer"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+                            </svg></a>
+                        </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        <div class="flex items-center">
+                            Description
+                            <a th:attr="hx-get=@{/items/refresh(page=${currentPage}, size=${size}, sortBy='name', direction=${sortBy == 'name' and direction == 'ASC' ? 'DESC' : 'ASC'})}"
+                               hx-target="#wood-pricing"
+                               hx-swap="outerHTML"
+                               hx-trigger="click"
+                               style="cursor: pointer"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+                            </svg></a>
+                        </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        <div class="flex items-center">
+                            SF Price
+                            <a th:attr="hx-get=@{/items/refresh(page=${currentPage}, size=${size}, sortBy='squareFootagePrice', direction=${sortBy == 'squareFootagePrice' and direction == 'ASC' ? 'DESC' : 'ASC'})}"
+                               hx-target="#wood-pricing"
+                               hx-swap="outerHTML"
+                               hx-trigger="click"
+                               style="cursor: pointer"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+                            </svg></a>
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="woodPrice : ${woodPrices}"
+                    th:id="'item-' + ${woodPrice.id}"
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <th th:text="${woodPrice.code}" scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    </th>
+                    <td th:text="${woodPrice.name}" class="px-6 py-2"></td>
+                    <td th:text="${woodPrice.squareFootagePrice}" class="px-6 py-2"></td>
+                </tr>
+                </tbody>
+                <tfoot class="bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
+                <tr class="font-semibold text-gray-900 dark:text-white">
+                    <td class="font-normal px-6 py-3 text-gray-500 dark:text-gray-400">
+                        <div th:text="${startRecord} + '-' + ${endRecord} + ' of ' + ${totalWoodPrices} + ' price(s)'"></div>
+                    </td>
+                    <td class="px-6 py-3"></td>
+                    <td class="px-6 py-3">
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation example" class="flex justify-end">
+                            <ul class="flex items-center -space-x-px h-8 text-sm">
+                                <!-- Previous button -->
+                                <li>
+                                    <a th:if="${currentPage > 0}"
+                                       th:attr="hx-get=@{/items/refresh(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, direction=${direction})}"
+                                       hx-target="#wood-pricing"
+                                       hx-swap="outerHTML"
+                                       hx-trigger="click"
+                                       style="cursor : pointer"
+                                       class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        <span class="sr-only">Previous</span>
+                                        <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <!-- Page number links -->
+                                <div th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}">
+                                    <li th:if="${totalPages > 1}">
+                                        <a th:attr="hx-get=@{/items/refresh(page=${pageNumber}, size=${size}, sortBy=${sortBy}, direction=${direction})}"
+                                           hx-target="#wood-pricing"
+                                           hx-swap="outerHTML"
+                                           hx-trigger="click"
+                                           th:text="${pageNumber + 1}"
+                                           th:classappend="${pageNumber == currentPage} ? 'text-green-500 border border-gray-300 bg-green-50 hover:bg-green-100 hover:text-green-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white' : 'leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'"
+                                           aria-current="page"
+                                           style="cursor: pointer"
+                                           class="flex items-center justify-center px-3 h-8"></a>
+                                    </li>
+                                </div>
+                                <!-- Next button -->
+                                <li>
+                                    <a th:if="${currentPage < totalPages - 1}"
+                                       th:attr="hx-get=@{/items/refresh(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, direction=${direction})}"
+                                       hx-target="#wood-pricing"
+                                       hx-swap="outerHTML"
+                                       hx-trigger="click"
+                                       style="cursor : pointer"
+                                       class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        <span class="sr-only">Next</span>
+                                        <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

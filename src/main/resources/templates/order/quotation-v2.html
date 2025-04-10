@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="'Quotation - ' + ${quotation.quotationNumber}"></title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div class="max-w-4xl mx-auto p-6 bg-white text-slate-500 shadow-md rounded mt-10 border rounded font-sans">
+  <!-- Header -->
+  <div class="border-b pb-8 mb-8 flex items-center">
+    <div class="flex-1 text-left">
+      <img src="https://themelize.me/wp-content/uploads/2024/10/cropped-logo-inline.webp" alt="Company Logo" class="h-10 w-auto mr-4"/>
+      <p class="text-sm text-slate-500">24 Jln Kayu, Klang, Selangor</p>
+      <p class="text-sm text-slate-500">Phone: (123) 456-7890</p>
+      <p class="text-sm text-slate-500">Email: wsco@company.com</p>
+    </div>
+    <h1 class="text-4xl font-bold text-slate-400 uppercase flex-1 text-right">Quotation</h1>
+  </div>
+
+  <div class="pb-4 mb-4 flex items-start">
+    <!-- Customer Information -->
+    <div class="mb-4">
+      <h2 class="font-semibold text-slate-700">Attention:</h2>
+      <!--
+      <p th:text="${customer.name}" class="text-slate-600"></p>
+      <p th:text="${order.contactPerson}" class="text-sm text-slate-500"></p>
+      <p th:text="${customer.address}" class="text-sm text-slate-500"></p>
+      <p th:text="${customer.phone}" class="text-sm text-slate-500"></p>
+      <p th:text="${customer.email}" class="text-sm text-slate-500"></p>
+      -->
+      <p class="text-slate-600">Client Name</p>
+      <p th:text="${order.contactPerson}" class="text-sm text-slate-500"></p>
+      <p class="text-sm text-slate-500">Client City, Country</p>
+      <p class="text-sm text-slate-500">Phone: (987) 654-3210</p>
+      <p class="text-sm text-slate-500">Email: client@example.com</p>
+    </div>
+
+    <!-- Invoice Information -->
+    <div class="mb-4 text-right flex-1">
+      <p class="text-sm text-slate-500">Quotation #: <span th:text="${quotation.quotationNumber}"></span>></p>
+      <p class="text-sm text-slate-500">Date: <span th:text="${#temporals.format(quotation.dateCreated, 'dd-MM-yyyy')}"></span></p>
+      <p class="text-sm text-slate-500">Salesperson: <span th:text="${order.salesperson}"></span></p>
+    </div>
+  </div>
+
+  <!-- Invoice Table -->
+  <table class="min-w-full table-auto mb-24">
+    <thead>
+      <tr class="bg-slate-100">
+        <th class="px-4 py-2 text-left">Item</th>
+        <!--<th class="px-4 py-2 text-left">Description</th>-->
+        <th class="px-4 py-2 text-left">Qty</th>
+        <th class="px-4 py-2 text-left">Price</th>
+        <th class="px-4 py-2 text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="oi : ${orderItems}">
+        <td th:text="${oi.name}" class="border px-4 py-2"></td>
+        <!--<td class="border px-4 py-2">Web Design Service</td>-->
+        <td th:text="${oi.quantity}" class="border px-4 py-2"></td>
+        <td th:text="${#numbers.formatDecimal(oi.totalCost / oi.quantity, 0, 'COMMA', 2, 'POINT')}" class="border px-4 py-2"></td>
+        <td th:text="${#numbers.formatDecimal(oi.totalCost, 0, 'COMMA', 2, 'POINT')}" class="border px-4 py-2 text-right"></td>
+      </tr>
+      <tr>
+        <td colspan="4" class="border px-4 py-2 text-right">Subtotal</td>
+        <td th:text="${#numbers.formatDecimal(order.totalCost, 0, 'COMMA', 2, 'POINT')}" class="border px-4 py-2 text-right"></td>
+      </tr>
+      <tr>
+        <td colspan="4" class="border px-4 py-2 text-right">Installation</td>
+        <td class="border px-4 py-2 text-right">0.00</td>
+      </tr>
+      <tr class="font-bold">
+        <td colspan="4" class="border px-4 py-2 text-right">Total Amount (RM)</td>
+        <td th:text="${#numbers.formatDecimal(order.totalCost, 0, 'COMMA', 2, 'POINT')}" class="border px-4 py-2 text-right"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="mb-6"></div>
+
+  <!-- Footer -->
+  <div class="text-sm text-slate-500 border-t pt-8 mt-8">
+    <p>Payment is due within 30 days of receipt.</p>
+    <p>Bank Account: 123456789, BMIC Bank</p>
+    <p>Thank you for your business!</p>
+    <p>Template by <a href="https://themelize.me/">Themelize.me!</a></p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quotation | CMS</title>
+
+    <style>
+        @media print {
+            .invoice-box {
+                max-width: unset;
+                box-shadow: none;
+                border: 0px;
+            }
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+        }
+
+        .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+        }
+
+        .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .invoice-box table tr td:nth-child(2) {
+            text-align: right;
+        }
+
+        .invoice-box table tr.top table td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.top table td.title {
+            font-size: 30px;
+            line-height: 10px;
+            color: #333;
+        }
+
+        .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+        }
+
+        .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .invoice-box table tr.details td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-box table tr.item.last td {
+            border-bottom: none;
+        }
+
+        .invoice-box table tr.total td:nth-child(2) {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .invoice-box table tr.top table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+
+            .invoice-box table tr.information table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+        }
+
+        /** RTL **/
+        .invoice-box.rtl {
+            direction: rtl;
+            font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        }
+
+        .invoice-box.rtl table {
+            text-align: right;
+        }
+
+        .invoice-box.rtl table tr td:nth-child(2) {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+<div class="invoice-box">
+    <table cellpadding="0" cellspacing="0">
+        <tr class="top">
+            <td colspan="3">
+                <table>
+                    <tr>
+                        <td class="title">
+                            <h5>COMPANY WS</h5><br />
+                        </td>
+                        <td></td>
+                        <td style="text-align: right">
+                            Quotation #: <span th:text="${quotation.quotationNumber}"></span><br />
+                            Issued on: <span th:text="${#temporals.format(quotation.dateCreated, 'dd-MM-yyyy')}"></span><br />
+                            Salesperson: <span th:text="${order.salesperson}"></span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="information">
+            <td colspan="3">
+                <table>
+                    <tr>
+                        <td>
+                            <b>Client</b><br />
+                            <span th:text="${customer.name}"></span><br />
+                            <span th:text="${customer.address}"></span>
+                        </td>
+                        <td></td>
+                        <td style="text-align: right">
+                            <b>Attention</b><br />
+                            <span th:text="${order.contactPerson}"></span><br />
+                            <span th:text="${customer.email}"></span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td>Description</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr class="details">
+            <td th:text="${order.description}"></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr class="heading">
+            <td>Item</td>
+            <td>Quantity</td>
+            <td style="text-align: right">Price</td>
+        </tr>
+
+        <tr th:each="oi : ${orderItems}" class="item">
+            <td th:text="${oi.name}"></td>
+            <td th:text="${oi.quantity}"></td>
+            <td th:text="${#numbers.formatDecimal(oi.totalCost, 0, 'COMMA', 2, 'POINT')}" style="text-align: right"></td>
+        </tr>
+
+        <tr class="total">
+            <td></td>
+            <td>Subtotal: </td>
+            <td th:text="${#numbers.formatDecimal(order.totalCost, 0, 'COMMA', 2, 'POINT')}" style="text-align: right"></td>
+        </tr>
+        <tr class="total">
+            <td></td>
+            <td>Installation: </td>
+            <td style="text-align: right">0.00</td>
+        </tr>
+        <tr class="total">
+            <td></td>
+            <td>Total (RM): </td>
+            <td th:text="${#numbers.formatDecimal(order.totalCost, 0, 'COMMA', 2, 'POINT')}" style="text-align: right"></td>
+        </tr>
+    </table>
+    <table>
+        <tr class="information">
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>
+                            17 Jln Kayu, Klang, Selangor<br />
+                            +603 4567 8910<br />
+                            wsco@company.com
+                        </td>
+                        <td style="text-align: right">
+                            Bank details<br />
+                            BMIC Bank<br />
+                            987654321
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

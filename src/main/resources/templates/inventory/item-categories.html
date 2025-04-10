@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+    <script>
+        htmx.onLoad(function(content) {
+            initFlowbite();
+        })
+    </script>
+    <style>
+        #toast-success {
+            transition: opacity 1s;
+        }
+    </style>
+    <title>Inventory</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div id="item-categories">
+        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a th:attr="hx-get=@{/items/list}"
+               hx-target="#item-categories"
+               hx-swap="outerHTML"
+               hx-trigger="click"
+               style="cursor: pointer">
+                <img class="rounded-t-lg" src="/images/image-02.jpeg" alt="All items link" />
+                <div class="p-5">
+                    <h5 th:text="'All Items ' + '(' + ${totalItems} + ')'" class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white"></h5>
+                    <div class="mb-1 mt-2 font-normal text-gray-500 dark:text-gray-400">Low Stock: <span th:text="${lowStockItems}" class="text-gray-900 dark:text-white"></span></div>
+                    <div class="mb-2 font-normal text-gray-500 dark:text-gray-400">Out of Stock: <span th:text="${noStockItems}" class="text-gray-900 dark:text-white"></span></div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="../../../../../node_modules/flowbite/dist/flowbite.min.js"></script>
+<script src="/js/flowbite.min.js"></script>
+<script type="text/javascript">
+    const target = document.getElementById("toast-success");
+    window.onload = setInterval(() => target.style.opacity = '0', 3000)
+</script>
+</body>
+</html>

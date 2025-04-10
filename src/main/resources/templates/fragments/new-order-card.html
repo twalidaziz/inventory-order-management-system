@@ -1,0 +1,54 @@
+<div th:fragment="newOrderForm" class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <form th:object="${order}"
+          th:action="@{/orders/add}"
+          th:attr="hx-post=@{/orders/add}"
+          hx-target="#order-list"
+          hx-swap="outerHTML"
+          method="post">
+        <h2 class="text-xl text-gray-900 dark:text-white mb-4 font-medium">New order</h2>
+        <div class="grid grid-cols-4 gap-4">
+            <div class="col-span-2">
+                <label for="description-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                <input type="text" name="description" id="description-input" class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="customer-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Customer</label>
+                <select id="customer-select" name="customer" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option selected>Select customer</option>
+                    <option th:each="customer : ${customers}"
+                            th:value="${customer.id}"
+                            th:text="${customer.name}">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label for="contact-person-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contact person</label>
+                <input type="text" name="contactPerson" id="contact-person-input" class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="salesperson-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Salesperson</label>
+                <input type="text" name="salesperson" id="salesperson-input" class="block w-full p-2 uppercase text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+            <div>
+                <label for="status-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+                <select id="status-select" name="status" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status}"
+                            th:selected="${status == 'DESIGN'}">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <button type="reset" class="w-full text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                    Clear
+                </button>
+            </div>
+            <div>
+                <button type="submit" class="w-full text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-2 mt-[27px]">
+                    Create order
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

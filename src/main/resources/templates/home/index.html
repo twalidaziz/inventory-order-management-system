@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{home.index.headline}]]</title>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <h1 class="grow text-3xl md:text-4xl font-medium mb-8">[[#{home.index.headline}]]</h1>
+            <p class="mb-12">[(#{home.index.text})]</p>
+            <div class="md:w-2/5 mb-12">
+                <h4 class="text-2xl font-medium mb-4">[[#{home.index.exploreEntities}]]</h4>
+                <div class="flex flex-col border border-gray-300 rounded">
+                    <a th:href="@{/orders}" class="w-full border-gray-300 hover:bg-gray-100 rounded-t rounded-b px-4 py-2">[[#{order.list.headline}]]</a>
+                </div>
+            </div>
+        </div>
+        <script src="../../../../../node_modules/flowbite/dist/flowbite.min.js"></script>
+    </body>
+</html>

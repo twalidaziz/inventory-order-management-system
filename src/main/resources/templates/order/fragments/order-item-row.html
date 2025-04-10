@@ -1,0 +1,35 @@
+<td class="px-6 py-2">
+    <p th:text="${orderItem.name}" class="font-medium text-gray-900 truncate whitespace-nowrap dark:text-white"></p>
+    <p th:text="${orderItem.sku}" class="text-gray-500 dark:text-gray-400"></p>
+</td>
+<td class="px-6 py-2 text-center text-xs">
+    <div class="relative flex items-center">
+        <button type="button" id="decrement-button" data-input-counter-decrement="counter-input" class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+            <svg class="w-2.5 h-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+            </svg>
+        </button>
+        <input type="text"
+               name="quantity"
+               id="counter-input"
+               th:value="${orderItem.quantity}"
+               th:attr="hx-post=@{/orders/{orderId}/update-quantity(orderId=${orderItem.orderId}, itemId=${orderItem.itemId})}, hx-target='#order-item-' + ${orderItem.itemId}"
+               hx-trigger="change"
+               hx-swap="innerHTML"
+               data-input-counter
+               class="flex-shrink-0 text-gray-900 dark:text-white border-0 bg-transparent text-xs font-normal focus:outline-none focus:ring-0 max-w-[2.5rem] text-center" placeholder="" required />
+        <button type="button" id="increment-button" data-input-counter-increment="counter-input" class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+            <svg class="w-2.5 h-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+            </svg>
+        </button>
+    </div>
+</td>
+<td th:text="${orderItem.totalCost}" class="px-6 py-2 text-right"></td>
+<td class="text-center px-6 py-2">
+    <button type="button" class="text-gray-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs p-2 text-center inline-flex items-center me-2 dark:text-gray-400 dark:hover:text-white">
+        <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+        </svg>
+    </button>
+</td>

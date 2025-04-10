@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+    <title>Orders</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:fragment="mainContent" id="main-content">
+        <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <div class="grid max-w-screen-xl grid-cols-3 gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8">
+                <div class="col-span-1 flex flex-col">
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <div th:text="${totalOrders}" class="mb-1 text-3xl font-extrabold"></div>
+                        <dd class="text-gray-500 dark:text-gray-400">Total Orders</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <dt th:text="${openOrders}" class="mb-1 text-3xl font-extrabold"></dt>
+                        <dd class="text-gray-500 dark:text-gray-400">Open Orders</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <dt th:text="${completedOrders}" class="mb-1 text-3xl font-extrabold"></dt>
+                        <dd class="text-gray-500 dark:text-gray-400">Completed orders</dd>
+                    </div>
+                </div>
+                <div class="col-span-1 flex flex-col">
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <div th:text="${totalItems}" class="mb-1 text-3xl font-extrabold"></div>
+                        <dd class="text-gray-500 dark:text-gray-400">Total Items</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <dt th:text="${lowStockItems}" class="mb-1 text-3xl font-extrabold"></dt>
+                        <dd class="text-gray-500 dark:text-gray-400">Low Stock Items</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <dt th:text="${noStockItems}" class="mb-1 text-3xl font-extrabold"></dt>
+                        <dd class="text-gray-500 dark:text-gray-400">Out of Stock Items</dd>
+                    </div>
+                </div>
+                <div class="col-span-1 flex flex-col">
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <div th:text="${totalCustomers}" class="mb-1 text-3xl font-extrabold"></div>
+                        <dd class="text-gray-500 dark:text-gray-400">Customers</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <dt th:text="${totalSuppliers}" class="mb-1 text-3xl font-extrabold"></dt>
+                        <dd class="text-gray-500 dark:text-gray-400">Suppliers</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center my-4">
+                        <dt th:text="${completedOrders}" class="mb-1 text-3xl font-extrabold"></dt>
+                        <dd class="text-gray-500 dark:text-gray-400">Completed orders</dd>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/flowbite.min.js"></script>
+</body>
+</html>

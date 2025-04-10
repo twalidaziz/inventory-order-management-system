@@ -1,0 +1,12 @@
+<div th:fragment="priceInput">
+    <input type="number" id="cost-input" name="unitPrice" th:value="${calculatedPrice}" readonly class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+    <a th:attr="hx-post=@{/items/calculate-price}"
+       hx-include="#density, #size"
+       hx-target="#price-container"
+       hx-swap="innerHTML"
+       hx-trigger="click"
+       style="bottom:5px; cursor:pointer"
+       class="text-white absolute end-1.5 bg-green-500 hover:bg-green-400 rounded-lg text-xs px-1.5 py-1 dark:bg-green-500 dark:hover:bg-green-400">
+        Calculate
+    </a>
+</div>

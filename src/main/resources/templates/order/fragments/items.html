@@ -1,0 +1,431 @@
+<div th:fragment="mainContent" id="main-content"
+     class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="grid grid-cols-2 gap-4">
+        <div class="col-span-2">
+            <h2 class="text-xl text-gray-900 dark:text-white font-medium">
+                Edit order <span th:text="${order.orderNumber}" class="bg-green-100 text-green-800 text-md font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400"></span>
+            </h2>
+        </div>
+        <!-- Tabs -->
+        <div class="col-span-2 text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+            <ul class="flex flex-wrap -mb-px">
+                <li class="me-2">
+                    <a th:attr="hx-get=@{/orders/edit/{id}(id=${order.id})}"
+                       hx-target="#main-content"
+                       hx-trigger="click"
+                       hx-swap="outerHTML"
+                       style="cursor : pointer"
+                       class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
+                        Details
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('MANAGER')" class="me-2">
+                    <a th:attr="hx-get=@{/orders/items/{id}(id=${order.id})}"
+                       hx-target="#main-content"
+                       hx-swap="outerHTML"
+                       hx-trigger="click"
+                       style="cursor:pointer"
+                       class="inline-block p-4 text-green-500 border-b-2 border-green-500 rounded-t-lg active dark:text-green-400 dark:border-green-400" aria-current="page">
+                        Items
+                    </a>
+                </li>
+                <li class="me-2">
+                    <a th:attr="hx-get=@{/orders/{orderId}/quotations(orderId=${order.id})}"
+                       hx-target="#main-content"
+                       hx-trigger="click"
+                       hx-swap="outerHTML"
+                       style="cursor:pointer"
+                       class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
+                        Quotations
+                    </a>
+                </li>
+                <li class="me-2">
+                    <a th:attr="hx-get=@{/orders/{orderId}/deliverables(orderId=${order.id})}"
+                       hx-target="#main-content"
+                       hx-trigger="click"
+                       hx-swap="outerHTML"
+                       style="cursor:pointer"
+                       class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
+                        Deliverables
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div th:fragment="itemListContainer" id="item-list-container" class="col-span-1">
+            <!-- Search field -->
+            <div class="flex">
+                <div class="w-3/5">
+                    <form th:attr="hx-get=@{/orders/{orderId}/search-item(orderId=${order.id})}"
+                          hx-target="#item-list"
+                          hx-trigger="submit"
+                          hx-swap="outerHTML"
+                          class="flex max-w-lg justify-start mb-4">
+                        <div class="relative w-full">
+                            <input type="text" name="keyword" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search by item name or SKU" required />
+                        </div>
+                        <button type="submit" class="inline-flex items-center py-2 px-3 ms-2 text-xs text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg">
+                            Search
+                        </button>
+                    </form>
+                </div>
+                <!-- Refresh button -->
+                <div class="w-2/5">
+                    <div class="flex w-full mb-4 justify-end">
+                        <a th:attr="hx-get=@{/orders/{orderId}/refresh-item-list(orderId=${order.id})}"
+                           hx-target="#item-list-container"
+                           hx-swap="outerHTML"
+                           hx-trigger="click"
+                           style="cursor:pointer"
+                           class="inline-flex items-center py-2 px-3 ms-2 text-xs text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Items table -->
+            <div th:fragment="itemList" id="item-list" class="relative overflow-x-auto shadow-md sm:rounded-lg border dark:border-gray-700">
+                <table class="text-xs text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-white uppercase bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 dark:text-white">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex items-center">
+                                    Item
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex items-center">
+                                    Stock
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 w-full">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}"
+                            th:id="'item-' + ${item.id}"
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <td class="px-6 py-2">
+                                <p th:text="${item.name}" class="font-medium text-gray-900 truncate whitespace-nowrap dark:text-white"></p>
+                                <p th:text="${item.sku}" class="text-gray-500 dark:text-gray-400"></p>
+                            </td>
+                            <td th:text="${item.quantity}" th:classappend="${item.quantity == 0 ? 'px-6 py-2 tx-sm text-right' : 'px-6 py-2 font-medium text-right text-gray-900 dark:text-white'}">
+                            </td>
+                            <!--
+                            <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 2, 'POINT')}" class="px-6 py-2">
+                            </td>
+                            -->
+                            <td class="text-center px-6 py-2 w-full">
+                                <div th:if="${item.isInOrder}" class="text-gray-400 dark:text-gray-400">
+                                    ADDED
+                                </div>
+                                <div th:unless="${item.isInOrder}">
+                                    <a class="font-medium text-green-500 dark:text-green-400 hover:underline"
+                                       th:attr="hx-post=@{/orders/{orderId}/add-item(orderId=${order.id}, itemId=${item.id})}"
+                                       hx-target="#main-content"
+                                       hx-swap="outerHTML"
+                                       hx-trigger="click"
+                                       style="cursor:pointer">
+                                        Add
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
+                        <tr class="font-semibold text-gray-900 dark:text-white">
+                            <td class="px-6 py-3 font-normal text-gray-500 dark:text-gray-400">
+                                <div th:text="'Showing ' + ${startRecord} + '-' + ${endRecord} + ' of ' + ${totalRecords} + ' item(s)'"></div>
+                            </td>
+                            <td class="px-6 py-3">
+                            </td>
+                            <td class="px-6 py-3">
+                                <!-- Pagination -->
+                                <nav aria-label="Page navigation example" class="flex justify-end">
+                                    <ul class="flex items-center -space-x-px h-8 text-sm">
+                                        <!-- Previous button -->
+                                        <li>
+                                            <a th:if="${currentPage > 0}"
+                                               th:attr="hx-get=@{/orders/{orderId}/refresh-item-list(orderId=${order.id}, page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, direction=${direction})}"
+                                               hx-target="#item-list-container"
+                                               hx-swap="outerHTML"
+                                               hx-trigger="click"
+                                               style="cursor : pointer"
+                                               class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                <span class="sr-only">Previous</span>
+                                                <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                                </svg>
+                                            </a>
+                                        </li>
+                                        <!-- Page number links -->
+                                        <div th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}">
+                                            <li th:if="${totalPages > 1}">
+                                                <a th:attr="hx-get=@{/orders/{orderId}/refresh-item-list(orderId=${order.id}, page=${pageNumber}, size=${size}, sortBy=${sortBy}, direction=${direction})}"
+                                                   hx-target="#item-list-container"
+                                                   hx-swap="outerHTML"
+                                                   hx-trigger="click"
+                                                   th:text="${pageNumber + 1}"
+                                                   th:classappend="${pageNumber == currentPage} ? 'text-green-500 border border-gray-300 bg-green-50 hover:bg-green-100 hover:text-green-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white' : 'leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'"
+                                                   aria-current="page"
+                                                   style="cursor: pointer"
+                                                   class="flex items-center justify-center px-3 h-8"></a>
+                                            </li>
+                                        </div>
+                                        <!-- Next button -->
+                                        <li>
+                                            <a th:if="${currentPage < totalPages - 1}"
+                                               th:attr="hx-get=@{/orders/{orderId}/refresh-item-list(orderId=${order.id}, page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, direction=${direction})}"
+                                               hx-target="#item-list-container"
+                                               hx-swap="outerHTML"
+                                               hx-trigger="click"
+                                               style="cursor : pointer"
+                                               class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                                <span class="sr-only">Next</span>
+                                                <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                                </svg>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <!-- Order item list & order total cost -->
+        <div th:fragment="orderItemList" id="order-item-list" class="col-span-1">
+            <!-- Empty order item list -->
+            <div th:if="${totalOrderItems} == 0" class="w-full h-[441px] mt-[52.5px] text-md text-center rtl:text-right bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="my-[194px]">
+                    <svg class="inline w-[60px] h-[60px] text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 13h3.439a.991.991 0 0 1 .908.6 3.978 3.978 0 0 0 7.306 0 .99.99 0 0 1 .908-.6H20M4 13v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6M4 13l2-9h12l2 9"/>
+                    </svg>
+                    <h2 class="mt-1 text-gray-500 dark:text-gray-400">No order item(s)</h2>
+                </div>
+            </div>
+            <!-- Not empty order item list -->
+            <div th:unless="${totalOrderItems} == 0">
+                <!-- Order item table -->
+                <div th:fragment="orderItemTable" id="order-item-table" class="relative overflow-x-auto shadow-md sm:rounded-lg border dark:border-gray-700 mt-[51.5px] mb-4">
+                    <table class="text-xs text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-white uppercase bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 dark:text-white">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    <div class="flex items-center">Order item</div>
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    <div class="flex items-center">Qty</div>
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    <div class="flex items-center">Cost</div>
+                                </th>
+                                <th scope="col" class="px-0 py-3 w-full">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="orderItem : ${orderItems}"
+                                th:fragment="orderItemRow"
+                                th:id="'order-item-' + ${orderItem.itemId}"
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td class="px-6 py-2">
+                                    <p th:text="${orderItem.name}" class="font-medium text-gray-900 truncate whitespace-nowrap dark:text-white"></p>
+                                    <p th:text="${orderItem.sku}" class="text-gray-500 dark:text-gray-400"></p>
+                                </td>
+                                <td class="px-6 py-2 text-left text-xs">
+                                        <div class="relative flex items-center">
+                                            <button th:if="${orderItem.quantity} == 1"
+                                                    type="button"
+                                                    th:attr="hx-post=@{/orders/{orderId}/di-quantity(orderId=${orderItem.orderId}, itemId=${orderItem.itemId})}, hx-target='#main-content', hx-include='#quantity-' + ${orderItem.orderId} + ${orderItem.itemId}"
+                                                    hx-vals='{"action": "decrement"}'
+                                                    hx-trigger="click"
+                                                    hx-swap="outerHTML"
+                                                    id="decrement-button"
+                                                    data-input-counter-decrement="quantity"
+                                                    class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                                                    disabled>
+                                                <svg class="w-2.5 h-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                                                </svg>
+                                            </button>
+                                            <button th:unless="${orderItem.quantity} == 1"
+                                                    type="button"
+                                                    th:attr="hx-post=@{/orders/{orderId}/di-quantity(orderId=${orderItem.orderId}, itemId=${orderItem.itemId})}, hx-target='#main-content', hx-include='#quantity-' + ${orderItem.orderId} + ${orderItem.itemId}"
+                                                    hx-vals='{"action": "decrement"}'
+                                                    hx-trigger="click"
+                                                    hx-swap="outerHTML"
+                                                    id="decrement-button"
+                                                    data-input-counter-decrement="quantity"
+                                                    class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-2.5 h-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                                                </svg>
+                                            </button>
+                                            <input type="text"
+                                                   name="quantity"
+                                                   th:id="'quantity-' + ${orderItem.orderId} + ${orderItem.itemId}"
+                                                   th:value="${orderItem.quantity}"
+                                                   th:attr="hx-post=@{/orders/{orderId}/update-quantity(orderId=${orderItem.orderId}, itemId=${orderItem.itemId})}, hx-target='#main-content'"
+                                                   hx-trigger="change"
+                                                   hx-swap="outerHTML"
+                                                   data-input-counter
+                                                   data-input-counter-min="1"
+                                                   data-input-counter-max="50"
+                                                   class="flex-shrink-0 text-gray-900 dark:text-white border-0 bg-transparent text-xs font-normal focus:outline-none focus:ring-0 max-w-[2.5rem] text-center" placeholder="" required />
+                                            <button type="button"
+                                                    th:attr="hx-post=@{/orders/{orderId}/di-quantity(orderId=${orderItem.orderId}, itemId=${orderItem.itemId})}, hx-target='#main-content', hx-include='#quantity-' + ${orderItem.orderId} + ${orderItem.itemId}"
+                                                    hx-vals='{"action": "increment"}'
+                                                    hx-trigger="click"
+                                                    hx-swap="outerHTML"
+                                                    id="increment-button"
+                                                    data-input-counter-increment="quantity"
+                                                    class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-2.5 h-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    <!--
+                                        <input  type="number"
+                                                name="quantity"
+                                                id="quantity-input"
+                                                th:value="${orderItem.quantity}"
+                                                th:attr="hx-post=@{/orders/{orderId}/update-quantity(orderId=${orderItem.orderId}, itemId=${orderItem.itemId})}, hx-target='#main-content'"
+                                                hx-trigger="change"
+                                                hx-swap="outerHTML"
+                                                data-input-countertype="number"
+                                                aria-describedby="helper-text-explanation"
+                                                class="max-w-16 bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                placeholder="1"
+                                                required
+                                        />
+                                        -->
+                                </td>
+                                <td th:text="${#numbers.formatDecimal(orderItem.totalCost, 0, 'COMMA', 2, 'POINT')}" class="px-6 py-2 text-right">
+                                </td>
+                                <td class="px-0 py-2 text-left">
+                                    <a th:attr="hx-post=@{/orders/{orderId}/delete-item(orderId=${orderItem.orderId}, itemId=${orderItem.itemId}, quantity=${orderItem.quantity})}"
+                                            hx-target="#main-content"
+                                            hx-swap="outerHTML"
+                                            hx-trigger="click"
+                                            style="cursor:pointer"
+                                            class="text-gray-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs p-2 text-center inline-flex items-center me-2 dark:text-gray-400 dark:hover:text-white">
+                                        <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Total cost -->
+                <div th:fragment="totalCost" id="total-cost" class="relative overflow-x-auto shadow-md sm:rounded-lg border dark:border-gray-700">
+                    <div class="grid grid-cols-2 gap-4 mx-4">
+                        <div class="col-span-2 mt-4 mb-1">
+                            <div class="flex justify-between">
+                                <span class="text-left font-semibold dark:text-white">TOTAL (RM):</span>
+                                <span th:text="${#numbers.formatDecimal(order.totalCost, 0, 'COMMA', 2, 'POINT')}" class="text-right font-semibold dark:text-white">0.00</span>
+                            </div>
+                        </div>
+                        <div class="col-span-1">
+                            <!--
+                            <button th:attr="hx-post=@{/orders/{orderId}/delete-all-items(orderId=${order.id})}"
+                                    hx-target="#main-content"
+                                    hx-swap="outerHTML"
+                                    hx-trigger="click"
+                                    style="cursor:pointer"
+                                    class="w-full text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-4">
+                                Remove all items
+                            </button>
+                            -->
+                            <button type="button" data-modal-target="popup-modal" data-modal-toggle="popup-modal" class="w-full text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-4">
+                                Remove all items
+                            </button>
+                            <div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                <div class="relative p-4 w-full max-w-md max-h-full">
+                                    <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                                        <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal">
+                                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                            </svg>
+                                            <span class="sr-only">Close modal</span>
+                                        </button>
+                                        <div class="p-4 md:p-5 text-center">
+                                            <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                            </svg>
+                                            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to remove all order item(s)?</h3>
+                                            <button th:attr="hx-post=@{/orders/{orderId}/delete-all-items(orderId=${order.id})}"
+                                                    hx-target="#main-content"
+                                                    hx-swap="outerHTML"
+                                                    hx-trigger="click"
+                                                    data-modal-hide="popup-modal"
+                                                    type="button"
+                                                    style="cursor:pointer"
+                                                    class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                                                Yes, remove all
+                                            </button>
+                                            <button data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-1">
+                            <button  th:attr="hx-post=@{/orders/{orderId}/generate-quotation(orderId=${order.id})}"
+                                     hx-target="#main-content"
+                                     hx-swap="outerHTML"
+                                     hx-trigger="click"
+                                     style="cursor:pointer"
+                                     class="w-full text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-3 py-2 text-center me-2 mb-4">
+                                Generate quotation
+                            </button>
+                            <!-- Quotation modal
+                            <div id="quotation-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                <div class="relative p-4 w-full max-w-md max-h-full">
+                                    <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                                        <div class="p-4 md:p-5 text-center">
+                                            <div role="status" class="mt-5 mb-2">
+                                                <svg aria-hidden="true" class="inline w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-green-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                </svg>
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Generating quotation...</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success message -->
+    <div th:if="${successMessage}" id="toast-success" class="flex fixed bottom-5 right-5 items-center w-full max-w-sm p-4 mb-4 border border-gray-200 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800 dark:border-gray-700" role="alert">
+        <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-600 dark:text-green-200">
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+            </svg>
+            <span class="sr-only">Check icon</span>
+        </div>
+        <div th:text="${successMessage}" class="ms-3 text-sm font-normal"></div>
+        <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-success" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+        </button>
+    </div>
+</div>

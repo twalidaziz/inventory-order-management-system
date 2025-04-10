@@ -1,0 +1,16 @@
+<tr th:fragment="customerRow" th:id="'customer-' + ${customer.id}"
+    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+    <th th:text="${customer.name}" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"></th>
+    <td th:text="${customer.email}" class="px-6 py-4"></td>
+    <td th:text="${customer.phone}" class="px-6 py-4"></td>
+    <td th:text="${#temporals.format(customer.lastUpdated, 'dd-MM-yyyy HH:mm')}" class="px-6 py-4"></td>
+    <td class="px-6 py-4 text-right">
+        <a class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+           th:attr="hx-get=@{/customers/edit/{id}(id=${customer.id})}"
+           hx-target="#editCustomerForm"
+           hx-trigger="click"
+           style="cursor: pointer">
+            Edit
+        </a>
+    </td>
+</tr>
