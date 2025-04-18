@@ -1,10 +1,10 @@
-# Cms
+# Inventory and Order Management System
 
 This app was created with Bootify.io - tips on working with the code [can be found here](https://bootify.io/next-steps/).
 
 ## Development
 
-Update your local database connection in `application.properties` or create your own `application-local.properties` file to override
+Update the local database connection in `application.properties` or create your own `application-local.properties` file to override
 settings for development.
 
 During development it is recommended to use the profile `local`. In IntelliJ `-Dspring.profiles.active=local` can be
@@ -48,15 +48,3 @@ environment variable when running the container.
 ```
 mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=dev.twalidaziz/cms
 ```
-
-## Further readings
-
-* [Maven docs](https://maven.apache.org/guides/index.html)  
-* [Spring Boot reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)  
-* [Spring Data JPA reference](https://docs.spring.io/spring-data/jpa/reference/jpa.html)
-* [Thymeleaf docs](https://www.thymeleaf.org/documentation.html)  
-* [Webpack concepts](https://webpack.js.org/concepts/)  
-* [npm docs](https://docs.npmjs.com/)  
-* [Tailwind CSS](https://tailwindcss.com/)  
-* [Htmx in a nutshell](https://htmx.org/docs/)  
-* [Learn Spring Boot with Thymeleaf](https://www.wimdeblauwe.com/books/taming-thymeleaf/)  
