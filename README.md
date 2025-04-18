@@ -1,6 +1,6 @@
 # Inventory and Order Management System
 
-This app was created with Bootify.io - tips on working with the code [can be found here](https://bootify.io/next-steps/).
+A web application for managing inventory and order information.
 
 ## Development
 
@@ -36,7 +36,7 @@ mvnw clean package
 
 Node.js is automatically downloaded using the `frontend-maven-plugin` and the final JS/CSS files are integrated into the jar.
 
-Start your application with the following command - here with the profile `production`:
+Start the application with the following command - here with the profile `production`:
 
 ```
 java -Dspring.profiles.active=production -jar ./target/cms-0.0.1-SNAPSHOT.jar
@@ -48,3 +48,7 @@ environment variable when running the container.
 ```
 mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=dev.twalidaziz/cms
 ```
+## Features
+
+* Inventory Management
+* Order Management
