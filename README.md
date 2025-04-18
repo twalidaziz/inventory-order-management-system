@@ -1,6 +1,6 @@
 # Inventory and Order Management System
 
-A web application for managing inventory and order information.
+A web application for managing inventory and order information build using Spring Boot and HTMX.
 
 ## Development
 
