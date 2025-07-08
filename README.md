@@ -51,4 +51,7 @@ mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=dev.twalidaziz/
 ## Features
 
 * Inventory Management
+  
+  https://github.com/user-attachments/assets/53207603-aea4-441c-82c7-7580cbaa7738
+  
 * Order Management
